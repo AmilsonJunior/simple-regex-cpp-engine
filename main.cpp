@@ -4,6 +4,7 @@
 
 #include "state.h"
 #include "nfa.h"
+#include "parser.h"
 
 class program 
 {
@@ -22,31 +23,19 @@ public:
             std::cout << "word: ";
             std::getline(std::cin, word);
 
-            // WIP
-
-            // std::vector<nfa*> list = {
-            //     create_nfa_from_symbol("b"),
-            //     create_nfa_from_symbol("c")
-            // };
-
-            // nfa* res = orMultiple(create_nfa_from_symbol("a"), list);
-            // std::cout << res->test("a") << std::endl; // true
-            // std::cout << res->test("b") << std::endl; // true
-            // std::cout << res->test("c") << std::endl; // true
-            // std::cout << res->test("d") << std::endl; // false
-            // std::cout << res->test("abc") << std::endl; // false
-
-            nfa* res = nfa_factory::closure(nfa_factory::create_nfa_from_symbol("a"));
-            std::cout << res->test("") << std::endl; // true
-            std::cout << res->test("a") << std::endl; // true
-            std::cout << res->test("aa") << std::endl; // true
-            std::cout << res->test("aaa") << std::endl; // true
-            std::cout << res->test("ab") << std::endl; // false
-            std::cout << res->test("accb") << std::endl; // false
+            std::string regex_with_operators = parser::insert_concat_operator(regex);
+            std::cout << regex_with_operators << "\n";
+            std::cout << parser::to_postfix(regex_with_operators) << "\n";
         }
     }
 
-protected: // nfa = |> (state) --> a (state)
+protected: // nfa = fragment = |> (state) --> a (state)
+    nfa* to_nfa(std::string regex)
+    {
+       
+       return nullptr;
+    }
+
     // nfa* to_nfa(std::string regex)
     // {
     //     // if (regex == "")
