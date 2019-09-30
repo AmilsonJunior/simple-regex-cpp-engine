@@ -25,7 +25,16 @@ public:
 
             std::string regex_with_operators = parser::insert_concat_operator(regex);
             std::cout << regex_with_operators << "\n";
-            std::cout << parser::to_postfix(regex_with_operators) << "\n";
+            std::string post_fixed_regex = parser::to_postfix(regex_with_operators);
+            std::cout << post_fixed_regex << "\n";
+
+            nfa* nfa_graph = nfa_factory::regex_to_nfa(post_fixed_regex);
+            if (nfa_graph->test(word))
+                std::cout << "valid\n";
+            else
+            {
+                std::cout << "invalid\n";
+            }
         }
     }
 

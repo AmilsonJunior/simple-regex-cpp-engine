@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stack>
+#include <vector>
 #include "state.h"
 
 class nfa 
@@ -23,6 +25,45 @@ public:
 class nfa_factory
 {
 public:
+    static nfa* regex_to_nfa(std::string regex)
+    {
+        std::stack<nfa*> fragments_stack;
+        for (char token : regex)
+        {
+            if (token == '+')
+            {
+                nfa* right = fragments_stack.top();
+                fragments_stack.pop();
+                nfa* left = fragments_stack.top();
+                fragments_stack.pop();
+                fragments_stack.push(_disjunction(left, right));
+            }
+            else if (token == '*')
+            {
+                nfa* result = closure(fragments_stack.top());
+                fragments_stack.pop();
+                fragments_stack.push(result);
+            }
+            else if (token == '.')
+            {
+                nfa* right = fragments_stack.top();
+                fragments_stack.pop();
+                nfa* left = fragments_stack.top();
+                fragments_stack.pop();
+                fragments_stack.push(_concat(left, right));
+            }
+            else
+            {
+                fragments_stack.push(create_nfa_from_symbol(parser::charToStr(token)));
+            }
+        }
+
+        nfa* top = fragments_stack.top();
+        fragments_stack.pop();
+
+        return top;
+    }
+
     static nfa* closure(nfa* fragment)
     {
         state* start = new state(false);
