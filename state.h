@@ -1,4 +1,6 @@
-#pragma once
+#ifndef PARSER_NFA
+#define PARSER_NFA
+
 #include <string>
 #include <map>
 #include <set>
@@ -98,3 +100,5 @@ public:
     std::string m_unique_id;
     std::multimap<std::string, state*> m_transitions;
 };
+
+#endif

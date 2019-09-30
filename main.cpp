@@ -4,7 +4,6 @@
 
 #include "state.h"
 #include "nfa.h"
-#include "parser.h"
 
 class program 
 {
@@ -23,9 +22,9 @@ public:
             std::cout << "word: ";
             std::getline(std::cin, word);
 
-            std::string regex_with_operators = parser::insert_concat_operator(regex);
+            std::string regex_with_operators = Parser::insert_concat_operator(regex);
             std::cout << regex_with_operators << "\n";
-            std::string post_fixed_regex = parser::to_postfix(regex_with_operators);
+            std::string post_fixed_regex = Parser::to_postfix(regex_with_operators);
             std::cout << post_fixed_regex << "\n";
 
             nfa* nfa_graph = nfa_factory::regex_to_nfa(post_fixed_regex);
@@ -37,55 +36,6 @@ public:
             }
         }
     }
-
-protected: // nfa = fragment = |> (state) --> a (state)
-    nfa* to_nfa(std::string regex)
-    {
-       
-       return nullptr;
-    }
-
-    // nfa* to_nfa(std::string regex)
-    // {
-    //     // if (regex == "")
-    //     //     return create_nfa_from_epsilon();
-        
-    //     std::stack<nfa*> _stack;
-
-    //     for (char token : regex) 
-    //     {
-    //         if (token == '*') 
-    //         {
-    //             nfa* _closure = closure(_stack.top());
-    //             _stack.pop();
-    //             _stack.push(_closure);
-    //         }
-    //         else if (token == '+')
-    //         {
-    //             if (_stack.size() >= 2)
-    //             {
-    //                 nfa* right = _stack.top();
-    //                 _stack.pop();
-    //                 nfa* left = _stack.top();
-    //                 _stack.pop();
-    //                 _stack.push(disjunction(left, right));
-    //             }
-    //             else
-    //             {
-    //                 std::cout << "error: cannot apply + over stack size < 2\n";
-    //             }
-    //         }
-    //         else
-    //         {
-    //             _stack.push(create_nfa_from_symbol(std::to_string(token)));
-    //         }
-    //     }
-
-    //     nfa* top = _stack.top();
-    //     _stack.pop();
-        
-    //     return top;
-    // }
 };
 
 int main () 

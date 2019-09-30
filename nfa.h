@@ -2,9 +2,11 @@
 
 #include <stack>
 #include <vector>
-#include "state.h"
 
-class nfa 
+#include "state.h"
+#include "parser.h"
+
+class nfa
 {
 public:
     nfa(state* start, state* end)
@@ -54,7 +56,7 @@ public:
             }
             else
             {
-                fragments_stack.push(create_nfa_from_symbol(parser::charToStr(token)));
+                fragments_stack.push(create_nfa_from_symbol(Parser::charToStr(token)));
             }
         }
 
