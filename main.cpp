@@ -23,16 +23,26 @@ public:
             std::getline(std::cin, word);
 
             std::string regex_with_operators = Parser::insert_concat_operator(regex);
-            std::cout << regex_with_operators << "\n";
+            //std::cout << regex_with_operators << "\n";
             std::string post_fixed_regex = Parser::to_postfix(regex_with_operators);
-            std::cout << post_fixed_regex << "\n";
+            //std::cout << post_fixed_regex << "\n";
 
             nfa* nfa_graph = nfa_factory::regex_to_nfa(post_fixed_regex);
-            if (nfa_graph->test(word))
-                std::cout << "valid\n";
+            if (!nfa_graph)
+            {
+                std::cout << "linguagem não é regular..\n";
+                continue;
+            }
             else
             {
-                std::cout << "invalid\n";
+                std::cout << "linguagem regular!\n";
+            }
+            
+            if (nfa_graph->test(word))
+                std::cout << word << " accepted by " << regex << "\n";
+            else
+            {
+                std::cout << word << " not accepted by " << regex << "\n";
             }
         }
     }

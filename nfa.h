@@ -27,36 +27,84 @@ public:
 class nfa_factory
 {
 public:
+    static std::string get_alphabet(std::string regex)
+    {
+        std::string alphabet;
+        for (char token : regex)
+        {
+            if (isalpha(token) && alphabet.find(token) == -1)
+            {
+                alphabet.push_back(token);
+            }
+        }
+
+        return alphabet;
+    }
+
     static nfa* regex_to_nfa(std::string regex)
     {
+        std::string alphabet = get_alphabet(regex);
+
+        std::cout << alphabet << "\n";
+
         std::stack<nfa*> fragments_stack;
         for (char token : regex)
         {
             if (token == '+')
             {
-                nfa* right = fragments_stack.top();
-                fragments_stack.pop();
-                nfa* left = fragments_stack.top();
-                fragments_stack.pop();
-                fragments_stack.push(_disjunction(left, right));
+                if (fragments_stack.size() >= 2)
+                {
+                    nfa* right = fragments_stack.top();
+                    fragments_stack.pop();
+                    nfa* left = fragments_stack.top();
+                    fragments_stack.pop();
+                    fragments_stack.push(_disjunction(left, right));
+                }
+                else
+                {
+                    return nullptr;
+                }
+                
             }
             else if (token == '*')
             {
-                nfa* result = closure(fragments_stack.top());
-                fragments_stack.pop();
-                fragments_stack.push(result);
+                if (fragments_stack.size() >= 1)
+                {
+                    nfa* result = closure(fragments_stack.top());
+                    fragments_stack.pop();
+                    fragments_stack.push(result);
+                }
+                else
+                {
+                    return nullptr;
+                }
+                
             }
             else if (token == '.')
             {
-                nfa* right = fragments_stack.top();
-                fragments_stack.pop();
-                nfa* left = fragments_stack.top();
-                fragments_stack.pop();
-                fragments_stack.push(_concat(left, right));
+                if (fragments_stack.size() >= 2)
+                {
+                    nfa* right = fragments_stack.top();
+                    fragments_stack.pop();
+                    nfa* left = fragments_stack.top();
+                    fragments_stack.pop();
+                    fragments_stack.push(_concat(left, right));
+                }
+                else
+                {
+                    return nullptr;
+                }
+                
             }
             else
             {
-                fragments_stack.push(create_nfa_from_symbol(Parser::charToStr(token)));
+                if (token != ' ')
+                    fragments_stack.push(create_nfa_from_symbol(Parser::charToStr(token)));
+                else
+                {
+                    return nullptr;
+                }
+                
             }
         }
 
