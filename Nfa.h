@@ -3,15 +3,14 @@
 #include <stack>
 #include <vector>
 
-#include "state.h"
+#include "State.h"
 #include "parser.h"
 
-class nfa
+class Nfa
 {
 public:
-    nfa(state* start, state* end)
-        : in_state(start)
-        , out_state(end)
+    Nfa(State *start, State *end)
+        : in_state(start), out_state(end)
     {
     }
 
@@ -20,43 +19,60 @@ public:
         return in_state->test(str);
     }
 
-    state* in_state = nullptr;
-    state* out_state = nullptr;
+    State *in_state = nullptr;
+    State *out_state = nullptr;
 };
 
-class nfa_factory
+class Alphabet
 {
 public:
-    static std::string get_alphabet(std::string regex)
+    Alphabet(std::string regex)
     {
-        std::string alphabet;
         for (char token : regex)
         {
-            if (isalpha(token) && alphabet.find(token) == -1)
+            if (isalpha(token) && m_alphabet.find(token) == -1)
             {
-                alphabet.push_back(token);
+                m_alphabet.push_back(token);
             }
         }
-
-        return alphabet;
     }
 
-    static nfa* regex_to_nfa(std::string regex)
+    std::string get() const
     {
-        std::string alphabet = get_alphabet(regex);
+        return m_alphabet;
+    }
 
-        std::cout << alphabet << "\n";
+    bool validate(std::string word) const
+    {
+        for (char c : word)
+        {
+            if (m_alphabet.find(c) == -1)
+                return false;
+        }
 
-        std::stack<nfa*> fragments_stack;
+        return true;
+    }
+
+protected:
+    std::string m_alphabet;
+};
+
+class NfaFactory
+{
+public:
+    static Nfa *regex_to_nfa(std::string regex)
+    {
+        // std::string alphabet = get_alphabet(regex);
+        std::stack<Nfa *> fragments_stack;
         for (char token : regex)
         {
             if (token == '+')
             {
                 if (fragments_stack.size() >= 2)
                 {
-                    nfa* right = fragments_stack.top();
+                    Nfa *right = fragments_stack.top();
                     fragments_stack.pop();
-                    nfa* left = fragments_stack.top();
+                    Nfa *left = fragments_stack.top();
                     fragments_stack.pop();
                     fragments_stack.push(_disjunction(left, right));
                 }
@@ -64,13 +80,12 @@ public:
                 {
                     return nullptr;
                 }
-                
             }
             else if (token == '*')
             {
                 if (fragments_stack.size() >= 1)
                 {
-                    nfa* result = closure(fragments_stack.top());
+                    Nfa *result = closure(fragments_stack.top());
                     fragments_stack.pop();
                     fragments_stack.push(result);
                 }
@@ -78,15 +93,14 @@ public:
                 {
                     return nullptr;
                 }
-                
             }
             else if (token == '.')
             {
                 if (fragments_stack.size() >= 2)
                 {
-                    nfa* right = fragments_stack.top();
+                    Nfa *right = fragments_stack.top();
                     fragments_stack.pop();
-                    nfa* left = fragments_stack.top();
+                    Nfa *left = fragments_stack.top();
                     fragments_stack.pop();
                     fragments_stack.push(_concat(left, right));
                 }
@@ -94,30 +108,29 @@ public:
                 {
                     return nullptr;
                 }
-                
             }
             else
             {
-                if (token != ' ')
+                if (isalpha(token))
                     fragments_stack.push(create_nfa_from_symbol(Parser::charToStr(token)));
                 else
                 {
                     return nullptr;
                 }
-                
             }
         }
 
-        nfa* top = fragments_stack.top();
+        Nfa *top = fragments_stack.top();
         fragments_stack.pop();
 
         return top;
     }
 
-    static nfa* closure(nfa* fragment)
+protected:
+    static Nfa *closure(Nfa *fragment)
     {
-        state* start = new state(false);
-        state* end = new state(true);
+        State *start = new State(false);
+        State *end = new State(true);
 
         start->add_symbol_transition(EPSILON, end);
         start->add_symbol_transition(EPSILON, fragment->in_state);
@@ -127,12 +140,12 @@ public:
 
         end->add_symbol_transition(EPSILON, fragment->in_state);
 
-        return new nfa(start, end);
+        return new Nfa(start, end);
     }
 
-    static nfa* concat(nfa* first, std::vector<nfa*> rest)
+    static Nfa *concat(Nfa *first, std::vector<Nfa *> rest)
     {
-        for (nfa* item : rest)
+        for (auto item : rest)
         {
             first = _concat(first, item);
         }
@@ -141,9 +154,9 @@ public:
     }
 
     // or
-    static nfa* disjunction(nfa* first, std::vector<nfa*> rest)
+    static Nfa *disjunction(Nfa *first, std::vector<Nfa *> rest)
     {
-        for (nfa* item : rest)
+        for (auto item : rest)
         {
             first = _disjunction(first, item);
         }
@@ -151,22 +164,21 @@ public:
         return first;
     }
 
-    static nfa* create_nfa_from_symbol(std::string symbol)
+    static Nfa *create_nfa_from_symbol(std::string symbol)
     {
-        state* in_state = new state(false);
-        state* out_state = new state(true);
+        State *in_state = new State(false);
+        State *out_state = new State(true);
 
         in_state->add_symbol_transition(symbol, out_state);
 
-        return new nfa(in_state, out_state);
+        return new Nfa(in_state, out_state);
     }
 
-private:
     // + ou |
-    static nfa* _disjunction(nfa* first, nfa* second)
+    static Nfa *_disjunction(Nfa *first, Nfa *second)
     {
-        state* start = new state(false);
-        state* end = new state(true);
+        State *start = new State(false);
+        State *end = new State(true);
 
         start->add_symbol_transition(EPSILON, first->in_state);
         start->add_symbol_transition(EPSILON, second->in_state);
@@ -177,17 +189,17 @@ private:
         first->out_state->add_symbol_transition(EPSILON, end);
         second->out_state->add_symbol_transition(EPSILON, end);
 
-        return new nfa(start, end);
+        return new Nfa(start, end);
     }
 
     // .
-    static nfa* _concat(nfa* first, nfa* second)
+    static Nfa *_concat(Nfa *first, Nfa *second)
     {
         first->out_state->m_is_final = false;
         second->out_state->m_is_final = true;
 
         first->out_state->add_symbol_transition(EPSILON, second->in_state);
 
-        return new nfa(first->in_state, second->out_state);
+        return new Nfa(first->in_state, second->out_state);
     }
 };

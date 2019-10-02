@@ -2,12 +2,6 @@
   "version": "2.0.0",
   "tasks": [
       {
-          "label": "debug",
-          "type": "shell",
-          "command": "",
-          "args": ["g++","-g", " *.cpp", "-o","a.exe"]
-      },
-      {
           "label": "Compile and run",
           "type": "shell",
           "command": "",

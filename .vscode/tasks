@@ -1,0 +1,95 @@
+# 1 "/home/amilson/Desktop/simple-regex-cpp-engine/.vscode/tasks.json"
+# 1 "/usr/bin//"
+# 1 "<built-in>"
+# 1 "<command-line>"
+# 31 "<command-line>"
+# 1 "/usr/include/stdc-predef.h" 1 3 4
+# 32 "<command-line>" 2
+# 1 "/home/amilson/Desktop/simple-regex-cpp-engine/.vscode/tasks.json"
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+        "label": "debug",
+        "type": "shell",
+        "command": "",
+        "args": [
+            "g++",
+            "-g",
+            " *.cpp",
+            "-o",
+            "a.exe"
+        ]
+    },
+    {
+        "label": "Compile and run",
+        "type": "shell",
+        "command": "",
+        "args": [
+            "g++",
+            "-g",
+            "*.cpp",
+            "-o",
+            "${fileBasenameNoExtension}.out",
+            "&&",
+            "clear",
+            "&&",
+            "./${fileBasenameNoExtension}.out"
+        ],
+        "group": "build",
+        "problemMatcher": {
+            "owner": "cpp",
+            "fileLocation": [
+                "relative",
+                "${workspaceRoot}"
+            ],
+            "pattern": {
+                "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+                "file": 1,
+                "line": 2,
+                "column": 3,
+                "severity": 4,
+                "message": 5
+            }
+        }
+    },
+    {
+        "type": "shell",
+        "label": "cpp build active file",
+        "command": "/usr/bin/cpp",
+        "args": [
+            "-g",
+            "${file}",
+            "-o",
+            "${fileDirname}/${fileBasenameNoExtension}"
+        ],
+        "options": {
+            "cwd": "/usr/bin"
+        },
+        "problemMatcher": [
+            "$gcc"
+        ],
+        "group": {
+            "kind": "build",
+            "isDefault": true
+        }
+    },
+    {
+        "type": "shell",
+        "label": "gcc build active file",
+        "command": "/usr/bin/gcc",
+        "args": [
+            "-g",
+            "${file}",
+            "-o",
+            "${fileDirname}/${fileBasenameNoExtension}"
+        ],
+        "options": {
+            "cwd": "/usr/bin"
+        },
+        "problemMatcher": [
+            "$gcc"
+        ]
+    }
+]
+}

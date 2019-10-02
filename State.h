@@ -1,5 +1,4 @@
-#ifndef PARSER_NFA
-#define PARSER_NFA
+#pragma once
 
 #include <string>
 #include <map>
@@ -21,23 +20,23 @@ std::string gen_random_str(const int len) {
 
 const std::string EPSILON = "&";
 
-class state 
+class State 
 {
 public:
-    state(bool is_final)
+    State(bool is_final)
         : m_is_final(is_final)
     {   
         m_unique_id = gen_random_str(10);
     }
 
-    void add_symbol_transition(std::string symbol, state* final_state)
+    void add_symbol_transition(std::string symbol, State* final_state)
     {
         m_transitions.insert({ symbol, final_state });
     }
 
-    std::vector<state*> get_symbol_transitions(std::string symbol)
+    std::vector<State*> get_symbol_transitions(std::string symbol)
     {
-        std::vector<state*> _transitions;
+        std::vector<State*> _transitions;
         for (auto item : m_transitions)
         {
             if (item.first == symbol)
@@ -47,7 +46,7 @@ public:
         return _transitions;
     }
 
-    bool test(std::string str, std::set<state*> visited = std::set<state*>())
+    bool test(std::string str, std::set<State*> visited = std::set<State*>())
     {
         if (visited.find(this) != visited.end())
         {
@@ -61,7 +60,7 @@ public:
             if (this->m_is_final)
                 return true;
             
-            for (state* next_state : this->get_symbol_transitions(EPSILON))
+            for (State* next_state : this->get_symbol_transitions(EPSILON))
             {
                 if (next_state->test("", visited))
                     return true;
@@ -74,13 +73,13 @@ public:
         symbol.push_back(str[0]); //a
         std::string rest = str.substr(1, str.length()); //bc
 
-        for (state* next_state : this->get_symbol_transitions(symbol))
+        for (State* next_state : this->get_symbol_transitions(symbol))
         {/*  */
             if (next_state->test(rest))
                 return true;
         }
 
-        for (state* next_state : this->get_symbol_transitions(EPSILON))
+        for (State* next_state : this->get_symbol_transitions(EPSILON))
         {
             if (next_state->test(str, visited))
                 return true;
@@ -89,7 +88,7 @@ public:
         return false;
     }
 
-    bool operator==(const state& other)
+    bool operator==(const State& other)
     {
         return (
            this->m_unique_id == other.m_unique_id
@@ -98,7 +97,5 @@ public:
 
     bool m_is_final;
     std::string m_unique_id;
-    std::multimap<std::string, state*> m_transitions;
+    std::multimap<std::string, State*> m_transitions;
 };
-
-#endif
