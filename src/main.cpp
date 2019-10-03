@@ -28,9 +28,16 @@ public:
                 if (word == "-1")
                     break;
 
+                if (!regex.length())
+                {
+                    std::cout << "Regex rule cannot be empty\n";
+                    WaitAndClear();
+                    break;
+                }
+
                 std::string regex_with_operators = Parser::insert_concat_operator(regex);
                 std::string post_fixed_regex = Parser::to_postfix(regex_with_operators);
-                
+
                 Alphabet alphabet(post_fixed_regex);
 
                 Nfa *nfa_graph = NfaFactory::regex_to_nfa(post_fixed_regex);
@@ -42,7 +49,7 @@ public:
                 }
                 else
                 {
-                    if (!alphabet.get().size())
+                    if (!alphabet.get().size() || !alphabet.validate(word))
                     {
                         std::cout << "Invalid alphabet!\n";
                         WaitAndClear();
@@ -53,11 +60,13 @@ public:
                     std::cout << "Valid Regular Expression!\n";
                 }
 
-                if (nfa_graph->test(word))
-                    std::cout << "\"" << word  << "\"" << " accepted by [ " << regex << " ]\n";
+                if (nfa_graph->match(word))
+                    std::cout << "\"" << word << "\""
+                              << " accepted by [ " << regex << " ]\n";
                 else
                 {
-                    std::cout << "\"" << word << "\"" << " not accepted by [ " << regex << " ]\n";
+                    std::cout << "\"" << word << "\""
+                              << " not accepted by [ " << regex << " ]\n";
                 }
 
                 WaitAndClear();
