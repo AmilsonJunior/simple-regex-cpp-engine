@@ -1,4 +1,4 @@
 Run with:
 
-`sudo chmod +x build.sh`
-`./build.sh`
+* `sudo chmod +x build.sh`
+* `./build-and-run.sh`
